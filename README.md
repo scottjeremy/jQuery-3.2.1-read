@@ -1,4 +1,4 @@
-# jQuery-3.2.1-read
+# jQuery-v3.2.1-read
 jQuery v3.2.1源码分析
 
 最近突发奇想，想研究一下用了这么久的jQuery，于是开始对jQuery源码开始解读
