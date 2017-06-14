@@ -86,31 +86,39 @@
     var arr = [];
     //通过闭包函数传入的window对象，避免document之类的全局变量被其他插件修改
     var document = window.document;
-    
+    /*
+     Object.getPrototypeOf()方法返回指定对象的原型（即，内部[[Prototype]]属性的值）
+     返回值：给定对象的原型。如果没有继承属性，则返回null
+    Object.getPrototypeOf例子：
+        Object.getPrototypeOf('foo');
+        TypeError: "foo" is not an object (ES5 code)
+        Object.getPrototypeOf('foo');
+        String.prototype(ES2015 code)
+    */
     var getProto = Object.getPrototypeOf;
 
+    //slice()方法可从已有的数组中返回选定的元素。
     var slice = arr.slice;
-
+    //concat()方法用于合并两个或多个数组。此方法不会更改现有数组，而是返回一个新数组
     var concat = arr.concat;
-
+    //push()方法将一个或者多个元素添加到数组的末尾，并返回数组的长度。
     var push = arr.push;
-
+    //indexOf()方法返回在数组中可以找到一个给定元素的第一个索引，如果不存在，则返回-1
     var indexOf = arr.indexOf;
-
+    //创建一个新的对象
     var class2type = {};
-
+    //toString()方法用于将当前对象以字符串的形式返回
     var toString = class2type.toString;
-
+    //hasOwnProperty()方法会返回一个布尔值，只是对象是否具有指定的属性作为资深（不继承）属性
     var hasOwn = class2type.hasOwnProperty;
-
+    //将布尔值转为string
     var fnToString = hasOwn.toString;
-
+    //call()方法调用一个函数，其具有一个指定的this值和分别地提供的参数（参数的列表）
     var ObjectFunctionString = fnToString.call( Object );
 
     var support = {};
 
-
-
+    //DOMEval函数用于在DOM中动态插入并执行脚本
     function DOMEval( code, doc ) {
         doc = doc || document;
 
