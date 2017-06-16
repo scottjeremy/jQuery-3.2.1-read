@@ -22,6 +22,8 @@
 * */
 ( function( global, factory ) {
 
+    //设立JavaScript严格模式
+    //推荐文章：http://www.ruanyifeng.com/blog/2013/01/javascript_strict_mode.html
     "use strict";
 
     /*
@@ -130,9 +132,7 @@
     /* global Symbol */
 // Defining this global in .eslintrc.json would create a danger of using the global
 // unguarded in another place, it seems safer to define global only for this module
-
-
-
+    
     var
         version = "3.2.1",
 
