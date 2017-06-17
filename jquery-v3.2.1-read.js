@@ -189,6 +189,7 @@
         // The current version of jQuery being used
         jquery: version,
 
+        //构造函数
         constructor: jQuery,
 
         // The default length of a jQuery object is 0
