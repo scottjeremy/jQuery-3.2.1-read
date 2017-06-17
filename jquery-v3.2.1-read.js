@@ -141,6 +141,19 @@
 
             // The jQuery object is actually just the init constructor 'enhanced'
             // Need init if jQuery is called (just allow error to be thrown if not included)
+            /*
+            回想一下我们平时是怎么引用jQuery的？
+            $('body').css('background','red');
+            $.parseJSON('{}');
+            jQuery的核心：每次引用jQuery变量就是创建一个新的jQuery实例对象。
+            css是每个实例共享的方法，是原型上的方法。
+            而$.parseJSON则是类的静态方法
+
+            为什么可以不用new关键字得到jQuery对象？
+            建议去看JavaScript高程三第六章，理解面向对象的程序设计、原型传递
+            jQuery没有使用new实例化jQuery对象，而是直接调用其函数
+
+            * */
             return new jQuery.fn.init( selector, context );
         },
 
