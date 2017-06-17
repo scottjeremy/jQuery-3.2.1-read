@@ -83,6 +83,8 @@
 // throw exceptions when non-strict code (e.g., ASP.NET 4.5) accesses strict mode
 // arguments.callee.caller (trac-13335). But as of jQuery 3.0 (2016), strict mode should be common
 // enough that all such attempts are guarded in a try block.
+    //设立JavaScript严格模式
+    //推荐文章：http://www.ruanyifeng.com/blog/2013/01/javascript_strict_mode.html
     "use strict";
     //创建一个新的数组来存储一系列处理数组的方法可以节省查找内存时间，提高效率
     var arr = [];
@@ -152,20 +154,32 @@
             为什么可以不用new关键字得到jQuery对象？
             建议去看JavaScript高程三第六章，理解面向对象的程序设计、原型传递
             jQuery没有使用new实例化jQuery对象，而是直接调用其函数
-
+            要实现这样，jQuery就要看成一个类，而属于他的构造函数要返回一个jQuery实例对象（工厂模式）
+            而且这个jQuery实例对象要能正常访问jQuery类原型上的属性与方法
+            这是通过原型传递解决不用new，把jQuery的原型传递给jQuery.prototype.init.prototype
+            jQuery.fn.init.prototype = jQuery.fn;
+            通过这个方法生成的实例this所指向的仍然是jQuery.fn(jQuery.prototype)
+            所以能正确访问jQuery类原型的属性与方法
+            推荐链接：http://www.cnblogs.com/SheilaSun/p/4779895.html
             * */
             return new jQuery.fn.init( selector, context );
         },
 
     // Support: Android <=4.0 only
     // Make sure we trim BOM and NBSP
+        //去掉字符串首尾空格，确保去除BOM和$nbsp;
+        // | 分割的两边都是一样的，分别匹配头尾的空格
         rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
 
     // Matches dashed string for camelizing
+        //匹配 -ms- 前缀
         rmsPrefix = /^-ms-/,
+        //表示任意英文字母
         rdashAlpha = /-([a-z])/g,
 
     // Used by jQuery.camelCase as callback to replace()
+    //在jQuery.camelCase()中会用到，将字符串转换为大写
+        //驼峰表示法，将font-size形式转化为fontSize
         fcamelCase = function( all, letter ) {
             return letter.toUpperCase();
         };
