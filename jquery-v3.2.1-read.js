@@ -193,6 +193,7 @@
         constructor: jQuery,
 
         // The default length of a jQuery object is 0
+        //设置jQuery对象默认长度为0
         length: 0,
 
         toArray: function() {
@@ -3029,12 +3030,17 @@
     // Prioritize #id over <tag> to avoid XSS via location.hash (#9521)
     // Strict HTML recognition (#11290: must start with <)
     // Shortcut simple #id case for speed
+    //一个简单检查HTML字符串的方法
+    //优先处理#id 为了防止XSS攻击location.hash改变网页路径所以要越过标签
+    //https://github.com/jquery/jquery/pull/474
+    //严格认出HTML标签（一定要以 < 开头）
         rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]+))$/,
 
         init = jQuery.fn.init = function( selector, context, root ) {
             var match, elem;
 
             // HANDLE: $(""), $(null), $(undefined), $(false)
+            //辨识出不是选择器
             if ( !selector ) {
                 return this;
             }
@@ -3043,8 +3049,10 @@
             // so migrate can support jQuery.sub (gh-2101)
             root = root || rootjQuery;
 
-            // Handle HTML strings
+            // Handle HTML strings 处理HTML字符串
+            //判断选择器是否为字符串
             if ( typeof selector === "string" ) {
+
                 if ( selector[ 0 ] === "<" &&
                     selector[ selector.length - 1 ] === ">" &&
                     selector.length >= 3 ) {
