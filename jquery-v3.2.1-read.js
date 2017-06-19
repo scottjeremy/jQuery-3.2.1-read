@@ -480,7 +480,9 @@
 
         // Support: Android <=4.0 only, PhantomJS 1 only
         // push.apply(_, arraylike) throws on ancient WebKit
+        //merge()函数用于合并两个数组内容到第一个数组
         merge: function( first, second ) {
+            // + 就是把后面的内容转成number类型
             var len = +second.length,
                 j = 0,
                 i = first.length;
@@ -3021,11 +3023,11 @@
 
 
 // Initialize a jQuery object
-
-
+//初始化jQuery对象
 // A central reference to the root jQuery(document)
-    var rootjQuery,
+//对根jQuery（文档）的中心引用
 
+    var rootjQuery,
     // A simple way to check for HTML strings
     // Prioritize #id over <tag> to avoid XSS via location.hash (#9521)
     // Strict HTML recognition (#11290: must start with <)
@@ -3040,7 +3042,7 @@
             var match, elem;
 
             // HANDLE: $(""), $(null), $(undefined), $(false)
-            //辨识出不是选择器
+            //辨识出不是选择器 如果不是，直接返回这个错误
             if ( !selector ) {
                 return this;
             }
@@ -3052,23 +3054,31 @@
             // Handle HTML strings 处理HTML字符串
             //判断选择器是否为字符串
             if ( typeof selector === "string" ) {
-
+                //如果selector以 < 开头 以 > 结尾并且长度大于3认为其是HTML字符串，则跳过正则的检查
                 if ( selector[ 0 ] === "<" &&
                     selector[ selector.length - 1 ] === ">" &&
                     selector.length >= 3 ) {
 
                     // Assume that strings that start and end with <> are HTML and skip the regex check
+                    //假如字符串都以<>开始和结束的话那就跳过正则表达式的检查
                     match = [ null, selector, null ];
 
                 } else {
+                    //exec()用于检索字符串中的正则表达式的匹配
+                    //如果字符串中有匹配的值返回该匹配值，否则返回null
+
+                    //这个判断最终是要拿到<>里的字符串
                     match = rquickExpr.exec( selector );
                 }
 
                 // Match html or make sure no context is specified for #id
+                //匹配HTML里面的字符串或确保没有上下文指定为# id
                 if ( match && ( match[ 1 ] || !context ) ) {
-
                     // HANDLE: $(html) -> $(array)
+                    //match[1]为true的情况，
                     if ( match[ 1 ] ) {
+                        //如果context是jQuery对象，取第一个DOM元素
+                        //instanceof只能用来判断对象和函数，不能用来判断字符串和数字
                         context = context instanceof jQuery ? context[ 0 ] : context;
 
                         // Option to run scripts is true for back-compat
@@ -9838,6 +9848,8 @@
 // collapse sibling forms: the second one becomes a child of the first one.
 // Because of that, this security measure has to be disabled in Safari 8.
 // https://bugs.webkit.org/show_bug.cgi?id=137337
+    //运行support.createHTMLDocument方法创建一个新的HTML文档
+    //判断这新创建的HTML文档里面是否有内容并且返回布尔值
     support.createHTMLDocument = ( function() {
         var body = document.implementation.createHTMLDocument( "" ).body;
         body.innerHTML = "<form></form><form></form>";
@@ -9849,10 +9861,16 @@
 // context (optional): If specified, the fragment will be created in this context,
 // defaults to document
 // keepScripts (optional): If true, will include scripts passed in the html string
+    //将字符串转化为一个DOM节点数组
+    //data ——用来解析的HTML字符串
+    //context —— DOM元素的上下文，在这个上下文中将创建的HTML片段
+    //keepScripts —— 一个布尔值，表明是否在传递的HTML字符串中包含脚本
     jQuery.parseHTML = function( data, context, keepScripts ) {
+        //如果传入的data不是字符串，则返回空数组
         if ( typeof data !== "string" ) {
             return [];
         }
+        //如果只有两个参数的时候，第二个就是是否保存script标签，这时候context就没有传进来
         if ( typeof context === "boolean" ) {
             keepScripts = context;
             context = false;
@@ -9864,6 +9882,9 @@
 
             // Stop scripts or inline event handlers from being executed immediately
             // by using document.implementation
+            //用document.implementation立刻停止脚本或内联事件处理程序
+            //运行support.createHTMLDocument方法创建一个新的HTML文档
+            //判断这新创建的HTML文档里面是否有内容并且返回布尔值
             if ( support.createHTMLDocument ) {
                 context = document.implementation.createHTMLDocument( "" );
 
