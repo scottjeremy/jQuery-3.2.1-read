@@ -3083,6 +3083,7 @@
 
                         // Option to run scripts is true for back-compat
                         // Intentionally let the error be thrown if parseHTML is not present
+                        //将第二个数组放到第一个数组后面，不影响第二个数组
                         jQuery.merge( this, jQuery.parseHTML(
                             match[ 1 ],
                             context && context.nodeType ? context.ownerDocument || context : document,
