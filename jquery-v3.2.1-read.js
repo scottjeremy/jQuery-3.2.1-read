@@ -9886,12 +9886,14 @@
             //用document.implementation立刻停止脚本或内联事件处理程序
             //运行support.createHTMLDocument方法创建一个新的HTML文档
             //判断这新创建的HTML文档里面是否有内容并且返回布尔值
+            //下面这段话的意思就是在context缺失的情况下，建立一个document对象
             if ( support.createHTMLDocument ) {
                 context = document.implementation.createHTMLDocument( "" );
 
                 // Set the base href for the created document
                 // so any parsed elements with URLs
                 // are based on the document's URL (gh-2965)
+                //为已创造的文档设置一个最基础的链接
                 base = context.createElement( "base" );
                 base.href = document.location.href;
                 context.head.appendChild( base );
