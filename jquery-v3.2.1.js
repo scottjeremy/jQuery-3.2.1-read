@@ -11,27 +11,10 @@
  *
  * Date: 2017-03-20T18:59Z
  */
-
-/*
-* (function(){})();这样的格式就是自执行函数，前面的function是函数的定义，然后紧接着的()表示执行
-* 函数里的可带参数，这样的自执行函数构建了一个命名空间，其中的变量都是局部变量，不管起什么名字，
-* 都不会覆盖全局变量。这样就不会污染全局变量的命名空间。
-* 有些朋友一开始看源代码可能会像我现在这样很困惑global和factory这两个参数到底有什么作用呢？
-* 推荐文章：http://www.cnblogs.com/vajoy/p/3623103.html
-* 解释从67行开始
-* */
 ( function( global, factory ) {
 
-    //设立JavaScript严格模式
-    //推荐文章：http://www.ruanyifeng.com/blog/2013/01/javascript_strict_mode.html
     "use strict";
 
-    /*
-        首先我们来看看下面这个判断语句：if ( typeof module === "object" && typeof module.exports === "object" )
-        玩过nodejs的朋友自然会很清楚的知道module.export和export是node.js中用来创建模块的方法，那么就好理解了，
-        若此条件成立，则要执行以下语句来兼容node.js（就是利用形参factory做中间人，来把JQ的各个功能模块用node.js创建
-        模块的方法创建起来）
-    */
     if ( typeof module === "object" && typeof module.exports === "object" ) {
 
         // For CommonJS and CommonJS-like environments where a proper `window`
@@ -41,88 +24,55 @@
         // This accentuates the need for the creation of a real `window`.
         // e.g. var jQuery = require("jquery")(window);
         // See ticket #14549 for more info.
-        /*
-        * CommonJS的模块分为：模块引用（require），模块定义（exprots），模块标示（module）
-        * jQuery声明全局变量的时候都是用window.jQuery或者window.$在源代码最后可以看到声明语句
-        * 现在有了Node.js，我们就要去兼容node.js、sea-JS的CommonJS规范或类CommonJS规范的js框架，也就是说条件
-        * if（typeof module === "object"&&typeof module.exports==="object"）不成立。那就直接执行后面else里的部分：
-        * factory(global);
-        * */
-        module.exports = global.document ?  //三目运算符，先判断当前环境是否支持window.document属性
-                                            //（注意我们上面提到过形参global的实参是window）
-            factory( global, true ) :      //支持：常规游览器一般都是支持的，直接module.exports = factory( global, true )
-    //把JQ后面那一万多行的功能函数扩展到node.js里面。(注意我们上面提到过形参factory的实参是实现JQ各种功能的一个外部函数)
-
-            function( w ) {   //如果当前环境不支持window.document属性，那就写个函数扔个Error说这环境不适用JQ，但依旧
-                               //返回JQ的功能函数（但大部分功能估计都不能用的了）
+        module.exports = global.document ?
+            factory( global, true ) :
+            function( w ) {
                 if ( !w.document ) {
                     throw new Error( "jQuery requires a window with a document" );
                 }
                 return factory( w );
             };
     } else {
-        //如何判断语句不成立，即为普通环境下不需要支持nodejs，则直接返回factory
         factory( global );
     }
 
 // Pass this if window is not defined yet
-    /*
-     最容易卡住的地方就是global和factory两个形参的作用是什么，以下就做点解释：
-     参数a：typeof window !== "undefined" ? window : this
-     参数b：function( window, noGlobal ) {};(函数来的)
-     其中形参global的实参a是一个三目运算符 typeof window !== "undefined" ? window : this 用于
-     判断当前执行环境是否支持window类型，是的话返回window，否则返回this
-     形参factory的实参b则是一个函数，里面包含了一万多行的JQ功能函数function( window, noGlobal ) {...};
-     现在这个外部匿名函数的参数的值我们都清楚了，现在看看这个匿名函数有什么作用呢？请回看42行代码
-
-     总得来说以上代码是为了兼容node.js所做的操作。
-     */
 } )( typeof window !== "undefined" ? window : this, function( window, noGlobal ) {
 
 // Edge <= 12 - 13+, Firefox <=18 - 45+, IE 10 - 11, Safari 5.1 - 9+, iOS 6 - 9.1
 // throw exceptions when non-strict code (e.g., ASP.NET 4.5) accesses strict mode
 // arguments.callee.caller (trac-13335). But as of jQuery 3.0 (2016), strict mode should be common
 // enough that all such attempts are guarded in a try block.
-    //设立JavaScript严格模式
-    //推荐文章：http://www.ruanyifeng.com/blog/2013/01/javascript_strict_mode.html
     "use strict";
-    //创建一个新的数组来存储一系列处理数组的方法可以节省查找内存时间，提高效率
+
     var arr = [];
-    //通过闭包函数传入的window对象，避免document之类的全局变量被其他插件修改
+
     var document = window.document;
-    /*
-     Object.getPrototypeOf()方法返回指定对象的原型（即，内部[[Prototype]]属性的值）
-     返回值：给定对象的原型。如果没有继承属性，则返回null
-    Object.getPrototypeOf例子：
-        Object.getPrototypeOf('foo');
-        TypeError: "foo" is not an object (ES5 code)
-        Object.getPrototypeOf('foo');
-        String.prototype(ES2015 code)
-    */
+
     var getProto = Object.getPrototypeOf;
 
-    //slice()方法可从已有的数组中返回选定的元素。
     var slice = arr.slice;
-    //concat()方法用于合并两个或多个数组。此方法不会更改现有数组，而是返回一个新数组
+
     var concat = arr.concat;
-    //push()方法将一个或者多个元素添加到数组的末尾，并返回数组的长度。
+
     var push = arr.push;
-    //indexOf()方法返回在数组中可以找到一个给定元素的第一个索引，如果不存在，则返回-1
+
     var indexOf = arr.indexOf;
-    //创建一个新的对象
+
     var class2type = {};
-    //toString()方法用于将当前对象以字符串的形式返回
+
     var toString = class2type.toString;
-    //hasOwnProperty()方法会返回一个布尔值，只是对象是否具有指定的属性作为资深（不继承）属性
+
     var hasOwn = class2type.hasOwnProperty;
-    //将布尔值转为string
+
     var fnToString = hasOwn.toString;
-    //call()方法调用一个函数，其具有一个指定的this值和分别地提供的参数（参数的列表）
+
     var ObjectFunctionString = fnToString.call( Object );
 
     var support = {};
 
-    //DOMEval函数用于在DOM中动态插入并执行脚本
+
+
     function DOMEval( code, doc ) {
         doc = doc || document;
 
@@ -134,7 +84,9 @@
     /* global Symbol */
 // Defining this global in .eslintrc.json would create a danger of using the global
 // unguarded in another place, it seems safer to define global only for this module
-    
+
+
+
     var
         version = "3.2.1",
 
@@ -143,43 +95,18 @@
 
             // The jQuery object is actually just the init constructor 'enhanced'
             // Need init if jQuery is called (just allow error to be thrown if not included)
-            /*
-            回想一下我们平时是怎么引用jQuery的？
-            $('body').css('background','red');
-            $.parseJSON('{}');
-            jQuery的核心：每次引用jQuery变量就是创建一个新的jQuery实例对象。
-            css是每个实例共享的方法，是原型上的方法。
-            而$.parseJSON则是类的静态方法
-
-            为什么可以不用new关键字得到jQuery对象？
-            建议去看JavaScript高程三第六章，理解面向对象的程序设计、原型传递
-            jQuery没有使用new实例化jQuery对象，而是直接调用其函数
-            要实现这样，jQuery就要看成一个类，而属于他的构造函数要返回一个jQuery实例对象（工厂模式）
-            而且这个jQuery实例对象要能正常访问jQuery类原型上的属性与方法
-            这是通过原型传递解决不用new，把jQuery的原型传递给jQuery.prototype.init.prototype
-            jQuery.fn.init.prototype = jQuery.fn;
-            通过这个方法生成的实例this所指向的仍然是jQuery.fn(jQuery.prototype)
-            所以能正确访问jQuery类原型的属性与方法
-            推荐链接：http://www.cnblogs.com/SheilaSun/p/4779895.html
-            * */
             return new jQuery.fn.init( selector, context );
         },
 
     // Support: Android <=4.0 only
     // Make sure we trim BOM and NBSP
-        //去掉字符串首尾空格，确保去除BOM和$nbsp;
-        // | 分割的两边都是一样的，分别匹配头尾的空格
         rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
 
     // Matches dashed string for camelizing
-        //匹配 -ms- 前缀
         rmsPrefix = /^-ms-/,
-        //表示任意英文字母
         rdashAlpha = /-([a-z])/g,
 
     // Used by jQuery.camelCase as callback to replace()
-    //在jQuery.camelCase()中会用到，将字符串转换为大写
-        //驼峰表示法，将font-size形式转化为fontSize
         fcamelCase = function( all, letter ) {
             return letter.toUpperCase();
         };
@@ -189,11 +116,9 @@
         // The current version of jQuery being used
         jquery: version,
 
-        //构造函数
         constructor: jQuery,
 
         // The default length of a jQuery object is 0
-        //设置jQuery对象默认长度为0
         length: 0,
 
         toArray: function() {
@@ -480,9 +405,7 @@
 
         // Support: Android <=4.0 only, PhantomJS 1 only
         // push.apply(_, arraylike) throws on ancient WebKit
-        //merge()函数用于合并两个数组内容到第一个数组
         merge: function( first, second ) {
-            // + 就是把后面的内容转成number类型
             var len = +second.length,
                 j = 0,
                 i = first.length;
@@ -3023,26 +2946,21 @@
 
 
 // Initialize a jQuery object
-//初始化jQuery对象
-// A central reference to the root jQuery(document)
-//对根jQuery（文档）的中心引用
 
+
+// A central reference to the root jQuery(document)
     var rootjQuery,
+
     // A simple way to check for HTML strings
     // Prioritize #id over <tag> to avoid XSS via location.hash (#9521)
     // Strict HTML recognition (#11290: must start with <)
     // Shortcut simple #id case for speed
-    //一个简单检查HTML字符串的方法
-    //优先处理#id 为了防止XSS攻击location.hash改变网页路径所以要越过标签
-    //https://github.com/jquery/jquery/pull/474
-    //严格认出HTML标签（一定要以 < 开头）
         rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]+))$/,
 
         init = jQuery.fn.init = function( selector, context, root ) {
             var match, elem;
 
             // HANDLE: $(""), $(null), $(undefined), $(false)
-            //辨识出不是选择器 如果不是，直接返回这个错误
             if ( !selector ) {
                 return this;
             }
@@ -3051,39 +2969,28 @@
             // so migrate can support jQuery.sub (gh-2101)
             root = root || rootjQuery;
 
-            // Handle HTML strings 处理HTML字符串
-            //判断选择器是否为字符串
+            // Handle HTML strings
             if ( typeof selector === "string" ) {
-                //如果selector以 < 开头 以 > 结尾并且长度大于3认为其是HTML字符串，则跳过正则的检查
                 if ( selector[ 0 ] === "<" &&
                     selector[ selector.length - 1 ] === ">" &&
                     selector.length >= 3 ) {
 
                     // Assume that strings that start and end with <> are HTML and skip the regex check
-                    //假如字符串都以<>开始和结束的话那就跳过正则表达式的检查
                     match = [ null, selector, null ];
 
                 } else {
-                    //exec()用于检索字符串中的正则表达式的匹配
-                    //如果字符串中有匹配的值返回该匹配值，否则返回null
-
-                    //这个判断最终是要拿到<>里的字符串
                     match = rquickExpr.exec( selector );
                 }
 
                 // Match html or make sure no context is specified for #id
-                //匹配HTML里面的字符串或确保没有上下文指定为# id
                 if ( match && ( match[ 1 ] || !context ) ) {
+
                     // HANDLE: $(html) -> $(array)
-                    //match[1]为true的情况，
                     if ( match[ 1 ] ) {
-                        //如果context是jQuery对象，取第一个DOM元素
-                        //instanceof只能用来判断对象和函数，不能用来判断字符串和数字
                         context = context instanceof jQuery ? context[ 0 ] : context;
 
                         // Option to run scripts is true for back-compat
                         // Intentionally let the error be thrown if parseHTML is not present
-                        //将第二个数组放到第一个数组后面，不影响第二个数组
                         jQuery.merge( this, jQuery.parseHTML(
                             match[ 1 ],
                             context && context.nodeType ? context.ownerDocument || context : document,
@@ -9849,8 +9756,6 @@
 // collapse sibling forms: the second one becomes a child of the first one.
 // Because of that, this security measure has to be disabled in Safari 8.
 // https://bugs.webkit.org/show_bug.cgi?id=137337
-    //运行support.createHTMLDocument方法创建一个新的HTML文档
-    //判断这新创建的HTML文档里面是否有内容并且返回布尔值
     support.createHTMLDocument = ( function() {
         var body = document.implementation.createHTMLDocument( "" ).body;
         body.innerHTML = "<form></form><form></form>";
@@ -9862,16 +9767,10 @@
 // context (optional): If specified, the fragment will be created in this context,
 // defaults to document
 // keepScripts (optional): If true, will include scripts passed in the html string
-    //将字符串转化为一个DOM节点数组
-    //data ——用来解析的HTML字符串
-    //context —— DOM元素的上下文，在这个上下文中将创建的HTML片段
-    //keepScripts —— 一个布尔值，表明是否在传递的HTML字符串中包含脚本
     jQuery.parseHTML = function( data, context, keepScripts ) {
-        //如果传入的data不是字符串，则返回空数组
         if ( typeof data !== "string" ) {
             return [];
         }
-        //如果只有两个参数的时候，第二个就是是否保存script标签，这时候context就没有传进来
         if ( typeof context === "boolean" ) {
             keepScripts = context;
             context = false;
@@ -9883,17 +9782,12 @@
 
             // Stop scripts or inline event handlers from being executed immediately
             // by using document.implementation
-            //用document.implementation立刻停止脚本或内联事件处理程序
-            //运行support.createHTMLDocument方法创建一个新的HTML文档
-            //判断这新创建的HTML文档里面是否有内容并且返回布尔值
-            //下面这段话的意思就是在context缺失的情况下，建立一个document对象
             if ( support.createHTMLDocument ) {
                 context = document.implementation.createHTMLDocument( "" );
 
                 // Set the base href for the created document
                 // so any parsed elements with URLs
                 // are based on the document's URL (gh-2965)
-                //为已创造的文档设置一个最基础的链接
                 base = context.createElement( "base" );
                 base.href = document.location.href;
                 context.head.appendChild( base );
@@ -9904,12 +9798,6 @@
 
         parsed = rsingleTag.exec( data );
         scripts = !keepScripts && [];
-        // 这里相当于
-        // if(!keepScripts){
-        // 	 scripts = [];
-        // }else{
-        // 	 scripts = !keepScripts;
-        // }
 
         // Single tag
         if ( parsed ) {

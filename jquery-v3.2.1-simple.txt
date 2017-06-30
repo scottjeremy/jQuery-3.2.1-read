@@ -1,0 +1,17 @@
+(function () {
+
+    (14 , 37)  做个判断兼容Node.JS
+
+    (40 , 112)  定义了一些变量和函数 jquery = function(){};
+
+    (114 , 193) 给JQ对象，添加一些方法和属性
+
+    (195 , 262) extend : JQ的继承方法
+
+    (264 , 510) jQuery.extend()  :  扩展一些工具方法
+
+    (538 , )
+
+    (10246)       window.jQuery = window.$ = jQuery;
+
+})();
