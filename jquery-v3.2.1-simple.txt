@@ -10,7 +10,11 @@
 
     (264 , 510) jQuery.extend()  :  扩展一些工具方法
 
-    (538 , )
+    (538 , 2901) Sizzle  :  实现复杂选择器
+
+    (3274 , 3507) Callbacks : 回调对象 ： 对函数的一个统一管理
+
+    (3509 , 3848) Deferred : 延迟兑现 ： 对异步的统一管理
 
     (10246)       window.jQuery = window.$ = jQuery;
 
