@@ -16,6 +16,8 @@
 
     (3509 , 3848) Deferred : 延迟兑现 ： 对异步的统一管理
 
+    (4354 , )
+
     (10246)       window.jQuery = window.$ = jQuery;
 
 })();
