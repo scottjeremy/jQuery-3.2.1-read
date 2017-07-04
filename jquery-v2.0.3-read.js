@@ -148,11 +148,12 @@
                 }
 
                 // Match html or make sure no context is specified for #id
-                //if能进入的有： $('<li>') $('#div1')
+                //if能进入的有： $('<li>') $('#div1') 即筛选创建标签和ID出来
                 if ( match && (match[1] || !context) ) {
 
                     // HANDLE: $(html) -> $(array)
                     //进一步判断：if(){ $('<li>') } else { $('#div1') }
+                    //筛选到创建标签
                     if ( match[1] ) {
                         //获取原生的document：防止出现$('#div', $(document))
                         context = context instanceof jQuery ? context[0] : context;
@@ -166,44 +167,55 @@
                         ) );
 
                         // HANDLE: $(html, props)
+                        //rsingleTag只能匹配单标签<li>或<li></li> && 满足JSON格式
                         if ( rsingleTag.test( match[1] ) && jQuery.isPlainObject( context ) ) {
                             for ( match in context ) {
                                 // Properties of context are called as methods if possible
+                                //判断jQuery是否为函数
                                 if ( jQuery.isFunction( this[ match ] ) ) {
+                                    //匹配到html的话就会输出这个html
                                     this[ match ]( context[ match ] );
 
                                     // ...and otherwise set as attributes
                                 } else {
+                                    //添加属性
                                     this.attr( match, context[ match ] );
                                 }
                             }
                         }
-
+                        //返回jQuery对象
                         return this;
 
                         // HANDLE: $(#id)
+                        //筛选ID ID的操作形式
                     } else {
                         elem = document.getElementById( match[2] );
 
                         // Check parentNode to catch when Blackberry 4.6 returns
                         // nodes that are no longer in the document #6963
+                        //有种在黑莓4.6的情况下会出现即使没有这个ID都会获取到这个没有ID的ID
+                        //通过寻找父级来确定这个ID是否存在
                         if ( elem && elem.parentNode ) {
                             // Inject the element directly into the jQuery object
                             this.length = 1;
                             this[0] = elem;
                         }
-
+                        //上下文肯定是document
                         this.context = document;
+                        //选择元素
                         this.selector = selector;
                         return this;
                     }
 
                     // HANDLE: $(expr, $(...))
+                    //应对两个不一样的场景：都是跳到同一个代码：jQuery(document).find()
+                    //$('ul',document).find('li')
                 } else if ( !context || context.jquery ) {
                     return ( context || rootjQuery ).find( selector );
 
                     // HANDLE: $(expr, context)
                     // (which is just equivalent to: $(context).find(expr)
+                    //$('ul',$(document)).find('li')
                 } else {
                     return this.constructor( context ).find( selector );
                 }
