@@ -1,0 +1,19 @@
+jQuery.extend({
+
+    expando  :  生成唯一JQ字符串（内部）
+    noConflict ： 防止冲突
+    isReady ： DOM是否加载完（内部）
+    readywait ： 等待多时文件的计数器（内部）
+    ready()  ：  推迟DOM触发
+    ifFunction()  :  是否为函数
+    isArray()  :  是否为数组
+    isWindow() : 是否为window
+    isNumeric()  ： 是否为数字
+    type()  :  判断数据类型
+    isPlainObject()  :  是否为对象自变量
+    isEmptyObject()  :  是否为空的对象
+    error()  :  抛出异常
+    parseHTML()  :  解析节点
+    parseJSON()  :  解析JSON
+
+});

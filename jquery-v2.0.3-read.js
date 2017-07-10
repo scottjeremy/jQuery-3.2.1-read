@@ -66,6 +66,7 @@
     // Define a local copy of jQuery
         jQuery = function( selector, context ) {
             // The jQuery object is actually just the init constructor 'enhanced'
+            //jQuery.prototype下的init方法
             return new jQuery.fn.init( selector, context, rootjQuery );
         },
 
@@ -229,7 +230,7 @@
 
                 // HANDLE: $(function)
                 // Shortcut for document ready
-                //传函数 $(function(){})
+                //传函数 :$(function(){})和$(document).ready(function(){});是一样的
             } else if ( jQuery.isFunction( selector ) ) {
                 return rootjQuery.ready( selector );
             }
@@ -247,41 +248,49 @@
 
         // The default length of a jQuery object is 0
         length: 0,
-
+        //实例下的JQ对象方法：转数组
         toArray: function() {
             return core_slice.call( this );
         },
 
         // Get the Nth element in the matched element set OR
         // Get the whole matched element set as a clean array
+        //转原生集合
+        //转JavaScript原生集合 例子：$('div').get(1).innerHTML = '222';
         get: function( num ) {
             return num == null ?
 
                 // Return a 'clean' array
+                //如果没有传进来参数，则返回一个数组；
                 this.toArray() :
 
                 // Return just the object
+                //如果有传进来的是正数：就返回该JQ对象的数组位置
+                //如果传进来的是负数：就是负数加上JQ对象数组的长度，就能获取最后的数组
                 ( num < 0 ? this[ this.length + num ] : this[ num ] );
         },
 
         // Take an array of elements and push it onto the stack
         // (returning the new matched element set)
-        pushStack: function( elems ) {
+        //JQ对象的入栈
+        pushStack: function( elems ) { //创建一个新的jQuery对象并将elems绑在上面
 
             // Build a new jQuery matched element set
+            //通过merge获得JSON的形式
             var ret = jQuery.merge( this.constructor(), elems );
-
             // Add the old object onto the stack (as a reference)
-            ret.prevObject = this;
-            ret.context = this.context;
+            //ret的之前的对象 = 当前对象
+            ret.prevObject = this;      //把老的对象复制给prevObject
+            ret.context = this.context;//执行上下文 = 该对象的执行上下文
 
             // Return the newly-formed element set
-            return ret;
+            return ret; //返回新对象
         },
 
         // Execute a callback for every element in the matched set.
         // (You can seed the arguments with an array of args, but this is
         // only used internally.)
+        //遍历集合
         each: function( callback, args ) {
             return jQuery.each( this, callback, args );
         },
@@ -294,23 +303,27 @@
         },
 
         slice: function() {
+            //将当前对象入栈
             return this.pushStack( core_slice.apply( this, arguments ) );
         },
-
+        //找集合的第一项
         first: function() {
             return this.eq( 0 );
         },
-
+        //找集合的最后一项
         last: function() {
             return this.eq( -1 );
         },
-
+        //找集合的指定项  eq有点不太懂
         eq: function( i ) {
-            var len = this.length,
-                j = +i + ( i < 0 ? len : 0 );
+            var len = this.length,//定义一个变量赋值给该对象的长度
+                j = +i + ( i < 0 ? len : 0 ); // 如果传进来的参数i小于0，则j=i+该对象的长度
+                                            //如果传进来的参数i大于1，则j=i+0
+            //把该对象进栈。如果j大于等于0和j小于该对象的长度，则返回该对象的第j个值
+            //条件不成立则返回一个空数组。
             return this.pushStack( j >= 0 && j < len ? [ this[j] ] : [] );
         },
-
+        //返回新集合
         map: function( callback ) {
             return this.pushStack( jQuery.map(this, function( elem, i ) {
                 return callback.call( elem, i, elem );
@@ -318,40 +331,52 @@
         },
 
         end: function() {
+            //返回当前对象的下一个对象（元素）
             return this.prevObject || this.constructor(null);
         },
 
         // For internal use only.
         // Behaves like an Array's method, not like a jQuery method.
+        //把元素放到集合的最后一个
         push: core_push,
+        //数组的排序
         sort: [].sort,
+        //数组的截取，删除，替换
         splice: [].splice
     };
 
 // Give the init function the jQuery prototype for later instantiation
     jQuery.fn.init.prototype = jQuery.fn;
+    //有两种可以扩展插件的方法：一，$.extend(); 二，$.fn.extend();
+    //$.extend();  ：  扩展工具方法，使用$.aaa();来调用
+    //$.fn.extend();  ：  扩展JQ实例方法，使用$().aaa();来调用
+    //jQuery的继承方法（extend）：扩展静态方法或扩展实例方法
 
     jQuery.extend = jQuery.fn.extend = function() {
         var options, name, src, copy, copyIsArray, clone,
+            //获取第一个参数：第一个参数后面的都是第一个参数的附带值
             target = arguments[0] || {},
             i = 1,
             length = arguments.length,
+            //deep是否为深拷贝
             deep = false;
 
         // Handle a deep copy situation
-        if ( typeof target === "boolean" ) {
-            deep = target;
-            target = arguments[1] || {};
+        if ( typeof target === "boolean" ) {  //看是不是深拷贝
+            deep = target;   //布尔值出现的时候把它赋值给deep
+            target = arguments[1] || {};  //目标元素变成第二个参数
             // skip the boolean and the target
             i = 2;
         }
 
         // Handle case when target is a string or something (possible in deep copy)
+        //看参数是否正确 看target或者jQuery是不是对象或者是不是函数
         if ( typeof target !== "object" && !jQuery.isFunction(target) ) {
             target = {};
         }
 
         // extend jQuery itself if only one argument is passed
+        //如果lenth == i
         if ( length === i ) {
             target = this;
             --i;
@@ -359,24 +384,30 @@
 
         for ( ; i < length; i++ ) {
             // Only deal with non-null/undefined values
+            //要判断后面的值是否为空
             if ( (options = arguments[ i ]) != null ) {
                 // Extend the base object
+                //for-in循环
                 for ( name in options ) {
                     src = target[ name ];
                     copy = options[ name ];
 
                     // Prevent never-ending loop
+                    //假如第一个参数与后面对象的其中一个变量相同就会导致循环引用
+                    // 防止循环引用第一个参数。
                     if ( target === copy ) {
                         continue;
                     }
 
                     // Recurse if we're merging plain objects or arrays
+                    //深拷贝
+                    // deep为真，copy得有值并且第一个参数后面必须得是一个对象
                     if ( deep && copy && ( jQuery.isPlainObject(copy) || (copyIsArray = jQuery.isArray(copy)) ) ) {
-                        if ( copyIsArray ) {
+                        if ( copyIsArray ) { //针对数组
                             copyIsArray = false;
                             clone = src && jQuery.isArray(src) ? src : [];
 
-                        } else {
+                        } else { //针对对象
                             clone = src && jQuery.isPlainObject(src) ? src : {};
                         }
 
@@ -384,7 +415,7 @@
                         target[ name ] = jQuery.extend( deep, clone, copy );
 
                         // Don't bring in undefined values
-                    } else if ( copy !== undefined ) {
+                    } else if ( copy !== undefined ) { //浅拷贝
                         target[ name ] = copy;
                     }
                 }
@@ -397,8 +428,10 @@
 
     jQuery.extend({
         // Unique for each copy of jQuery on the page
+        //生成唯一JQ字符串
+        //expando ： jQuery +  jQuery版本号 + 随机数
         expando: "jQuery" + ( core_version + Math.random() ).replace( /\D/g, "" ),
-
+        //防止冲突
         noConflict: function( deep ) {
             if ( window.$ === jQuery ) {
                 window.$ = _$;
@@ -412,6 +445,7 @@
         },
 
         // Is the DOM ready to be used? Set to true once it occurs.
+        //DOM是否加载完
         isReady: false,
 
         // A counter to track how many items to wait for before
