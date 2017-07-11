@@ -85,6 +85,7 @@
         rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]*))$/,
 
     // Match a standalone tag
+        //判断是不是单标签
         rsingleTag = /^<(\w+)\s*\/?>(?:<\/\1>|)$/,
 
     // Matches dashed string for camelizing
@@ -294,7 +295,7 @@
         each: function( callback, args ) {
             return jQuery.each( this, callback, args );
         },
-
+        //JQ实例对象的ready最终会调用静态工具方法$.ready();具体看extend2.txt
         ready: function( fn ) {
             // Add the callback
             jQuery.ready.promise().done( fn );
@@ -453,6 +454,7 @@
         readyWait: 1,
 
         // Hold (or release) the ready event
+        //延迟对象，延迟ready，传参数bollean值 true就是延迟ready。
         holdReady: function( hold ) {
             if ( hold ) {
                 jQuery.readyWait++;
@@ -478,9 +480,11 @@
             }
 
             // If there are functions bound, to execute
+
             readyList.resolveWith( document, [ jQuery ] );
 
             // Trigger any bound ready events
+            //先判断有没有主动触发的方法
             if ( jQuery.fn.trigger ) {
                 jQuery( document ).trigger("ready").off("ready");
             }
@@ -489,35 +493,39 @@
         // See test/unit/core.js for details concerning isFunction.
         // Since version 1.3, DOM methods and functions like alert
         // aren't supported. They return false on IE (#2968).
+        // 在低版本的游览器中会返回对象
+        //判断是否为函数
         isFunction: function( obj ) {
             return jQuery.type(obj) === "function";
         },
-
+        //判断是否为数组
         isArray: Array.isArray,
 
         isWindow: function( obj ) {
+            //不是空而且不是undefined && window只能和window比
             return obj != null && obj === obj.window;
         },
 
-        isNumeric: function( obj ) {
+        isNumeric: function( obj ) {  //用isNaN原生的方法    isFinite测有限的数字
             return !isNaN( parseFloat(obj) ) && isFinite( obj );
         },
 
         type: function( obj ) {
             if ( obj == null ) {
-                return String( obj );
+                return String( obj );  //返回（把空或者undefined转成字符串）
             }
             // Support: Safari <= 5.1 (functionish RegExp)
-            return typeof obj === "object" || typeof obj === "function" ?
+            return typeof obj === "object" || typeof obj === "function" ?  //字符串 num的话直接返回typeof obj
             class2type[ core_toString.call(obj) ] || "object" :
                 typeof obj;
         },
-
+        //判断对象自变量 只判断两种形式 一：{name : 'hello'}  二：new Object();
         isPlainObject: function( obj ) {
             // Not plain objects:
             // - Any object or value whose internal [[Class]] property is not "[object Object]"
             // - DOM nodes
             // - window
+            //判断 是否为 object 或 DOM节点 或 window自变量  都返回false
             if ( jQuery.type( obj ) !== "object" || obj.nodeType || jQuery.isWindow( obj ) ) {
                 return false;
             }
@@ -527,7 +535,7 @@
             // the "constructor" property of certain host objects, ie. |window.location|
             // https://bugzilla.mozilla.org/show_bug.cgi?id=814622
             try {
-                if ( obj.constructor &&
+                if ( obj.constructor &&  //判断是否有这个constructor属性
                     !core_hasOwn.call( obj.constructor.prototype, "isPrototypeOf" ) ) {
                     return false;
                 }
@@ -539,10 +547,10 @@
             // |obj| is a plain object, created by {} or constructed with new Object
             return true;
         },
-
+        //判断Object是否为空
         isEmptyObject: function( obj ) {
             var name;
-            for ( name in obj ) {
+            for ( name in obj ) {  //for-in  系统自带的不能for-in得到，不是系统自带的话就能for-in得到
                 return false;
             }
             return true;
@@ -555,11 +563,13 @@
         // data: string of html
         // context (optional): If specified, the fragment will be created in this context, defaults to document
         // keepScripts (optional): If true, will include scripts passed in the html string
+        //解析节点  把一个字符串转化为一个节点
+        //数组 根节点 是否解析JavaScript
         parseHTML: function( data, context, keepScripts ) {
-            if ( !data || typeof data !== "string" ) {
+            if ( !data || typeof data !== "string" ) { //判断为空 或 判断是否为字符串
                 return null;
             }
-            if ( typeof context === "boolean" ) {
+            if ( typeof context === "boolean" ) { //不指定上下文的话就走到这
                 keepScripts = context;
                 context = false;
             }
@@ -569,43 +579,44 @@
                 scripts = !keepScripts && [];
 
             // Single tag
-            if ( parsed ) {
+            if ( parsed ) { //如果单标签单标签 直接走创建标签
                 return [ context.createElement( parsed[1] ) ];
             }
-
+            //如果创建多标签
             parsed = jQuery.buildFragment( [ data ], context, scripts );
 
             if ( scripts ) {
                 jQuery( scripts ).remove();
             }
 
-            return jQuery.merge( [], parsed.childNodes );
+            return jQuery.merge( [], parsed.childNodes );//通过merge转成JSON
         },
 
-        parseJSON: JSON.parse,
+        parseJSON: JSON.parse,//把字符串转为JSON  只支持IE8以上的版本
 
         // Cross-browser xml parsing
         parseXML: function( data ) {
             var xml, tmp;
-            if ( !data || typeof data !== "string" ) {
+            if ( !data || typeof data !== "string" ) {  //数据不存在 或者 数据必须是字符串类型
                 return null;
             }
 
             // Support: IE9
             try {
-                tmp = new DOMParser();
-                xml = tmp.parseFromString( data , "text/xml" );
+                tmp = new DOMParser();  //创建好对象  只支持IE9以上
+                //如果在IE9下传进来的XML数据有错误，则下一下的代码会报错，但在其他游览器中（Firefox）则不会报错
+                xml = tmp.parseFromString( data , "text/xml" );  //为创建好的对象注入内容
             } catch ( e ) {
                 xml = undefined;
             }
 
-            if ( !xml || xml.getElementsByTagName( "parsererror" ).length ) {
+            if ( !xml || xml.getElementsByTagName( "parsererror" ).length ) { //在Firefox下不会报错但会生成XML错误信息
                 jQuery.error( "Invalid XML: " + data );
             }
             return xml;
         },
 
-        noop: function() {},
+        noop: function() {}, //空函数
 
         // Evaluates a script in a global context
         globalEval: function( code ) {
@@ -901,14 +912,16 @@
 
     jQuery.ready.promise = function( obj ) {
         if ( !readyList ) {
-
+            //创建延迟对象
             readyList = jQuery.Deferred();
 
             // Catch cases where $(document).ready() is called after the browser event has already occurred.
             // we once tried to use readyState "interactive" here, but it caused issues like the one
             // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
+            //当DOM加载完成时，直接调用这个方法
             if ( document.readyState === "complete" ) {
                 // Handle it asynchronously to allow scripts the opportunity to delay ready
+                //IE中会出现没加载完成就执行下面语句，所以加上定时器保证在IE下正常运行
                 setTimeout( jQuery.ready );
 
             } else {
@@ -917,6 +930,7 @@
                 document.addEventListener( "DOMContentLoaded", completed, false );
 
                 // A fallback to window.onload, that will always work
+                //假如有浏览器缓存了的话会优先加载下面这段代码
                 window.addEventListener( "load", completed, false );
             }
         }
