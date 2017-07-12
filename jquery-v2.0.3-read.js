@@ -619,23 +619,28 @@
         noop: function() {}, //空函数
 
         // Evaluates a script in a global context
+        //全局解析JS
         globalEval: function( code ) {
             var script,
                 indirect = eval;
 
-            code = jQuery.trim( code );
+            code = jQuery.trim( code );//将字符串前后空格去掉
 
             if ( code ) {
                 // If the code includes a valid, prologue position
                 // strict mode pragma, execute code by injecting a
                 // script tag into the document.
-                if ( code.indexOf("use strict") === 1 ) {
+                if ( code.indexOf("use strict") === 1 ) {    //判断当前解析的JS是否包含严格模式
+                    //  在严格模式下创建script
                     script = document.createElement("script");
+                    //把JS内容放到script里面
                     script.text = code;
+                    //在文档头部加入这个script标签，拿完全局变量后就删除这个script标签
                     document.head.appendChild( script ).parentNode.removeChild( script );
                 } else {
                     // Otherwise, avoid the DOM node creation, insertion
                     // and removal by using an indirect global eval
+                    //通过使用eval来书写全局变量  eval是一个关键字也是一个window下的属性
                     indirect( code );
                 }
             }
@@ -643,22 +648,24 @@
 
         // Convert dashed to camelCase; used by the css and data modules
         // Microsoft forgot to hump their vendor prefix (#9572)
+        //转驼峰的方法
         camelCase: function( string ) {
             return string.replace( rmsPrefix, "ms-" ).replace( rdashAlpha, fcamelCase );
         },
-
+        //判断是否为指定节点名  根据传入的节点名是否与节点名相同
         nodeName: function( elem, name ) {
-            return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
+            return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase(); //为了全兼容，都写成小写
         },
 
         // args is for internal usage only
+        //遍历集合     （对象，回调函数， 每个值）  针对数组或者集合
         each: function( obj, callback, args ) {
             var value,
                 i = 0,
                 length = obj.length,
-                isArray = isArraylike( obj );
+                isArray = isArraylike( obj ); //判断当前obj是否数组
 
-            if ( args ) {
+            if ( args ) {  //内部使用就走这里
                 if ( isArray ) {
                     for ( ; i < length; i++ ) {
                         value = callback.apply( obj[ i ], args );
@@ -678,12 +685,12 @@
                 }
 
                 // A special, fast, case for the most common use of each
-            } else {
+            } else {  //外部使用就走这里
                 if ( isArray ) {
                     for ( ; i < length; i++ ) {
                         value = callback.call( obj[ i ], i, obj[ i ] );
 
-                        if ( value === false ) {
+                        if ( value === false ) { //可以通过return false来结束each函数的循环
                             break;
                         }
                     }
@@ -701,7 +708,7 @@
             return obj;
         },
 
-        trim: function( text ) {
+        trim: function( text ) {   //去前后空格
             return text == null ? "" : core_trim.call( text );
         },
 
