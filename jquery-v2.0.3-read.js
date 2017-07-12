@@ -713,13 +713,17 @@
         },
 
         // results is for internal usage only
+        //类数组转真数组  字符串转数组  JSON转数组
+        //内部使用一个参数，外部使用两个参数
         makeArray: function( arr, results ) {
             var ret = results || [];
 
-            if ( arr != null ) {
-                if ( isArraylike( Object(arr) ) ) {
+            if ( arr != null ) { //当存在的时候
+                //判断是否类似于集合，把arr放到Object中
+                if ( isArraylike( Object(arr) ) ) {   //有长度就为真
+                    //用merge转成数组
                     jQuery.merge( ret,
-                        typeof arr === "string" ?
+                        typeof arr === "string" ?  //字符串就放在数组里
                             [ arr ] : arr
                     );
                 } else {
@@ -729,16 +733,18 @@
 
             return ret;
         },
-
+        //数组版的indexOf
         inArray: function( elem, arr, i ) {
+            //如果没有就-1      如果有就调用数组的indexOf
             return arr == null ? -1 : core_indexOf.call( arr, elem, i );
         },
-
+        //合并数组
         merge: function( first, second ) {
+            //获取他们的长度
             var l = second.length,
                 i = first.length,
                 j = 0;
-
+            //判断这个长度是否为number    JSON肯定没有长度
             if ( typeof l === "number" ) {
                 for ( ; j < l; j++ ) {
                     first[ i++ ] = second[ j ];
@@ -753,7 +759,7 @@
 
             return first;
         },
-
+        //过滤得到新数组
         grep: function( elems, callback, inv ) {
             var retVal,
                 ret = [],
@@ -772,7 +778,7 @@
 
             return ret;
         },
-
+        //映射新数组
         // arg is for internal usage only
         map: function( elems, callback, arg ) {
             var value,
@@ -783,6 +789,7 @@
 
             // Go through the array, translating each of the items to their
             if ( isArray ) {
+                //有length就走for循环
                 for ( ; i < length; i++ ) {
                     value = callback( elems[ i ], i, arg );
 
@@ -792,6 +799,7 @@
                 }
 
                 // Go through every key on the object,
+                //
             } else {
                 for ( i in elems ) {
                     value = callback( elems[ i ], i, arg );
@@ -807,6 +815,7 @@
         },
 
         // A global GUID counter for objects
+        //jQuery唯一标识符（内部使用）
         guid: 1,
 
         // Bind a function to a context, optionally partially applying any
