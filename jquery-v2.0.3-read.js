@@ -759,13 +759,13 @@
 
             return first;
         },
-        //过滤得到新数组
+        //过滤得到新数组   (每一个元素，和i)
         grep: function( elems, callback, inv ) {
             var retVal,
                 ret = [],
                 i = 0,
                 length = elems.length;
-            inv = !!inv;
+            inv = !!inv;  //undefined的话加上 !! 就会转成false
 
             // Go through the array, only saving the items
             // that pass the validator function
@@ -780,11 +780,13 @@
         },
         //映射新数组
         // arg is for internal usage only
+        //arg是内部使用
+        //(每一个元素，回调函数)
         map: function( elems, callback, arg ) {
             var value,
                 i = 0,
                 length = elems.length,
-                isArray = isArraylike( elems ),
+                isArray = isArraylike( elems ), //判断elems是不是数组
                 ret = [];
 
             // Go through the array, translating each of the items to their
@@ -792,7 +794,7 @@
                 //有length就走for循环
                 for ( ; i < length; i++ ) {
                     value = callback( elems[ i ], i, arg );
-
+                    //不为空就添加进去
                     if ( value != null ) {
                         ret[ ret.length ] = value;
                     }
@@ -800,7 +802,7 @@
 
                 // Go through every key on the object,
                 //
-            } else {
+            } else { //JSON就走for in
                 for ( i in elems ) {
                     value = callback( elems[ i ], i, arg );
 
@@ -811,6 +813,8 @@
             }
 
             // Flatten any nested arrays
+            //为了避免得到复合数组，只想得到单一数组
+            //内部使用core_concat.apply是为了避免得到复合数组
             return core_concat.apply( [], ret );
         },
 
@@ -849,34 +853,36 @@
 
         // Multifunctional method to get and set values of a collection
         // The value/s can optionally be executed if it's a function
+        //CSS交换  （操作的元素或集合，fn【回调函数】，key关键字，val值，设置设置或者获取的boolean值）
         access: function( elems, fn, key, value, chainable, emptyGet, raw ) {
             var i = 0,
                 length = elems.length,
-                bulk = key == null;
+                bulk = key == null;  //是否有这个值
 
             // Sets many values
-            if ( jQuery.type( key ) === "object" ) {
+            //设置多组值（多功能值设置）
+            if ( jQuery.type( key ) === "object" ) {  //判断是否为object
                 chainable = true;
-                for ( i in key ) {
+                for ( i in key ) {  //多组值用for-in  然后用递归
                     jQuery.access( elems, fn, i, key[i], true, emptyGet, raw );
                 }
 
                 // Sets one value
-            } else if ( value !== undefined ) {
-                chainable = true;
+            } else if ( value !== undefined ) {      //设置一组值（单设置一个值）
+                chainable = true;    //需要设置true
 
-                if ( !jQuery.isFunction( value ) ) {
+                if ( !jQuery.isFunction( value ) ) {   //判断val是不是函数
                     raw = true;
                 }
 
-                if ( bulk ) {
+                if ( bulk ) {   //没有bulk值
                     // Bulk operations run against the entire set
-                    if ( raw ) {
+                    if ( raw ) {  //是字符串就走这里
                         fn.call( elems, value );
                         fn = null;
 
                         // ...except when executing function values
-                    } else {
+                    } else {  //是函数的话
                         bulk = fn;
                         fn = function( elem, key, value ) {
                             return bulk.call( jQuery( elem ), value );
@@ -900,24 +906,27 @@
                     length ? fn( elems[0], key ) : emptyGet;
         },
 
-        now: Date.now,
+        now: Date.now,  //当前时间距1970年1月1日的毫秒数
 
         // A method for quickly swapping in/out CSS properties to get correct calculations.
         // Note: this method belongs to the css module but it's needed here for the support module.
         // If support gets modularized, this method should be moved back to the css module.
+        //css交换（内部）
         swap: function( elem, options, callback, args ) {
             var ret, name,
-                old = {};
+                old = {}; //存老的样式于一个JSON
 
             // Remember the old values, and insert the new ones
+            //存起旧的样式（value）和插入新的样式
             for ( name in options ) {
-                old[ name ] = elem.style[ name ];
-                elem.style[ name ] = options[ name ];
+                old[ name ] = elem.style[ name ]; //将每一个样式都存到这个老的JSON里
+                elem.style[ name ] = options[ name ]; //把设置好的样式放到当前标签的样式里
             }
-
+            //把宽度值给存好
             ret = callback.apply( elem, args || [] );
 
             // Revert the old values
+            //再把样式还原回来
             for ( name in options ) {
                 elem.style[ name ] = old[ name ];
             }
@@ -958,15 +967,15 @@
         class2type[ "[object " + name + "]" ] = name.toLowerCase();
     });
 
-    function isArraylike( obj ) {
+    function isArraylike( obj ) {  //判断是不是数组 或类数组  或者JQ中带length的JSON
         var length = obj.length,
-            type = jQuery.type( obj );
+            type = jQuery.type( obj );  //判断一下类型
 
-        if ( jQuery.isWindow( obj ) ) {
+        if ( jQuery.isWindow( obj ) ) {  //判断当前对象是否为window
             return false;
         }
 
-        if ( obj.nodeType === 1 && length ) {
+        if ( obj.nodeType === 1 && length ) {  //判断这个nodeType一组元素节点或者是否有长度
             return true;
         }
 
@@ -976,7 +985,7 @@
     }
 
 // All jQuery objects should point back to these
-    rootjQuery = jQuery(document);
+    rootjQuery = jQuery(document); //获取jQuery的根节点
     /*!
      * Sizzle CSS Selector Engine v1.9.4-pre
      * http://sizzlejs.com/
@@ -2990,13 +2999,17 @@
      *	stopOnFalse:	interrupt callings when a callback returns false
      *
      */
+    //Callbacks有以下几个方法：add remove has empty disable disabled lock locked fireWith fire fired
+    // Callbacks有四个配置选项  once memory unique stopOnFalse
+    //once(只能触发一次) memory（无论add写在哪，都能执行到） unique（去重，不会重复触发函数）
     jQuery.Callbacks = function( options ) {
-
         // Convert options from String-formatted to Object-formatted if needed
         // (we check in cache first)
-        options = typeof options === "string" ?
+        options = typeof options === "string" ?  //判断是否为字符串
+            //分割开：例如$.Callbacks('once memory'); 就会生成
+            //options : {once : true, memory: true}
             ( optionsCache[ options ] || createOptions( options ) ) :
-            jQuery.extend( {}, options );
+            jQuery.extend( {}, options );  //如果不是字符串就走extend
 
         var // Last fire value (for non-forgettable lists)
             memory,
@@ -3051,12 +3064,13 @@
                         (function add( args ) {
                             jQuery.each( args, function( _, arg ) {
                                 var type = jQuery.type( arg );
-                                if ( type === "function" ) {
+                                if ( type === "function" ) {  //是函数类型就push到list里
                                     if ( !options.unique || !self.has( arg ) ) {
                                         list.push( arg );
                                     }
                                 } else if ( arg && arg.length && type !== "string" ) {
                                     // Inspect recursively
+                                    //数组的话就递归
                                     add( arg );
                                 }
                             });
