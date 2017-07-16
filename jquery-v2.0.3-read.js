@@ -3089,6 +3089,7 @@
                     return this;
                 },
                 // Remove a callback from the list
+                //删除也用each
                 remove: function() {
                     if ( list ) {
                         jQuery.each( arguments, function( _, arg ) {
@@ -3111,10 +3112,12 @@
                 },
                 // Check if a given callback is in the list.
                 // If no argument is given, return whether or not list has callbacks attached.
+                //查看是否存在Callback的list里
                 has: function( fn ) {
                     return fn ? jQuery.inArray( fn, list ) > -1 : !!( list && list.length );
                 },
                 // Remove all callbacks from the list
+                //删除所有在list中的回调事件
                 empty: function() {
                     list = [];
                     firingLength = 0;
@@ -3143,19 +3146,22 @@
                 },
                 // Call all callbacks with the given context and arguments
                 fireWith: function( context, args ) {
+                    //判断这个列表里面是否有值和(取反fired和stack)
                     if ( list && ( !fired || stack ) ) {
                         args = args || [];
+                        //把参数传成数组
                         args = [ context, args.slice ? args.slice() : args ];
-                        if ( firing ) {
+                        if ( firing ) { //如果有就进队列
                             stack.push( args );
                         } else {
+                            //如果fire里有参数，那么就会把fire里参数放到函数的实参里
                             fire( args );
                         }
                     }
                     return this;
                 },
                 // Call all the callbacks with the given arguments
-                fire: function() {
+                fire: function() {  //启动回调列表里的回调函数
                     self.fireWith( this, arguments );
                     return this;
                 },
@@ -3168,9 +3174,10 @@
         return self;
     };
     jQuery.extend({
-
+        //jQuery的延迟对象     $.Deferred();是基于$.Callbacks();
         Deferred: function( func ) {
-            var tuples = [
+            //用数组来完成映射关系  （映射数组）
+            var tuples = [  //分别创建回调对象
                     // action, add listener, listener list, final state
                     [ "resolve", "done", jQuery.Callbacks("once memory"), "resolved" ],
                     [ "reject", "fail", jQuery.Callbacks("once memory"), "rejected" ],
@@ -3220,10 +3227,11 @@
 
             // Add list-specific methods
             jQuery.each( tuples, function( i, tuple ) {
-                var list = tuple[ 2 ],
-                    stateString = tuple[ 3 ];
+                var list = tuple[ 2 ], //数组的第二项
+                    stateString = tuple[ 3 ]; //状态
 
                 // promise[ done | fail | progress ] = list.add
+                //回调对象的add赋值给数组的第二项
                 promise[ tuple[1] ] = list.add;
 
                 // Handle state
@@ -3237,10 +3245,12 @@
                 }
 
                 // deferred[ resolve | reject | notify ]
+                //数组的第一项 （状态）
                 deferred[ tuple[0] ] = function() {
                     deferred[ tuple[0] + "With" ]( this === deferred ? promise : this, arguments );
                     return this;
                 };
+                //调用可带参数的fireWith
                 deferred[ tuple[0] + "With" ] = list.fireWith;
             });
 
@@ -3257,6 +3267,7 @@
         },
 
         // Deferred helper
+        //辅助于Deferred
         when: function( subordinate /* , ..., subordinateN */ ) {
             var i = 0,
                 resolveValues = core_slice.call( arguments ),
