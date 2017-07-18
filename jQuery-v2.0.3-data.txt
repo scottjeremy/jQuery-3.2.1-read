@@ -1,0 +1,17 @@
+jQuery.extend({
+
+    acceptData
+    hasData
+    data
+    removeData
+    _data
+    _removeData
+
+}):
+
+jQuery.fn.extend({
+
+    data
+    removeData
+
+});

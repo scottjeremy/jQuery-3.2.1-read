@@ -3030,18 +3030,19 @@
         // Fire callbacks
             fire = function( data ) {
                 memory = options.memory && data;
-                fired = true;
+                fired = true;  //调用过一次就为真了
                 firingIndex = firingStart || 0;
                 firingStart = 0;
                 firingLength = list.length;
-                firing = true;
-                for ( ; list && firingIndex < firingLength; firingIndex++ ) {
+                firing = true;  //触发进行时
+                for ( ; list && firingIndex < firingLength; firingIndex++ ) {  //循环
+                    //data[1]是fire里的参数  如果两个参数相同就进行if
                     if ( list[ firingIndex ].apply( data[ 0 ], data[ 1 ] ) === false && options.stopOnFalse ) {
                         memory = false; // To prevent further calls using add
                         break;
                     }
                 }
-                firing = false;
+                firing = false;//触发结束
                 if ( list ) {
                     if ( stack ) {
                         if ( stack.length ) {
@@ -3058,19 +3059,21 @@
             self = {
                 // Add a callback or a collection of callbacks to the list
                 add: function() {
-                    if ( list ) {
+                    if ( list ) {  //判断有没有list 一上来就是空数组。
                         // First, we save the current length
+                        //首先就存一下长度。有两个add的话就就1了。没有就0
                         var start = list.length;
+                        //以下的闭合函数是针对callbacks.add('aaa','bbb')
                         (function add( args ) {
-                            jQuery.each( args, function( _, arg ) {
+                            jQuery.each( args, function( _, arg ) { //jQuery的遍历操作
                                 var type = jQuery.type( arg );
                                 if ( type === "function" ) {  //是函数类型就push到list里
-                                    if ( !options.unique || !self.has( arg ) ) {
+                                    if ( !options.unique || !self.has( arg ) ) {  //选项中是否有unique||数组去重操作
                                         list.push( arg );
                                     }
-                                } else if ( arg && arg.length && type !== "string" ) {
+                                } else if ( arg && arg.length && type !== "string" ) {  //这里是针对callbacks.add([aaa,bbb])
                                     // Inspect recursively
-                                    //数组的话就递归
+                                    //数组的话就递归会上面的if判断的函数类型
                                     add( arg );
                                 }
                             });
@@ -3081,7 +3084,7 @@
                             firingLength = list.length;
                             // With memory, if we're not firing then
                             // we should call right away
-                        } else if ( memory ) {
+                        } else if ( memory ) {  //
                             firingStart = start;
                             fire( memory );
                         }
@@ -3094,7 +3097,7 @@
                         jQuery.each( arguments, function( _, arg ) {
                             var index;
                             while( ( index = jQuery.inArray( arg, list, index ) ) > -1 ) {
-                                list.splice( index, 1 );
+                                list.splice( index, 1 ); //对数组进行splice，删除
                                 // Handle firing indexes
                                 if ( firing ) {
                                     if ( index <= firingLength ) {
@@ -3111,6 +3114,7 @@
                 },
                 // Check if a given callback is in the list.
                 // If no argument is given, return whether or not list has callbacks attached.
+                //看看list里面是否有这个回调函数在
                 has: function( fn ) {
                     return fn ? jQuery.inArray( fn, list ) > -1 : !!( list && list.length );
                 },
@@ -3143,13 +3147,14 @@
                 },
                 // Call all callbacks with the given context and arguments
                 fireWith: function( context, args ) {
+                    //list得真的时候走if  //第二次调用 进行过一次后fired就为假了。
                     if ( list && ( !fired || stack ) ) {
                         args = args || [];
                         args = [ context, args.slice ? args.slice() : args ];
                         if ( firing ) {
                             stack.push( args );
                         } else {
-                            fire( args );
+                            fire( args ); //fire()里可以添加参数，参数就是函数的实参
                         }
                     }
                     return this;
@@ -3170,8 +3175,10 @@
     jQuery.extend({
 
         Deferred: function( func ) {
+            //创建一个映射数组
             var tuples = [
                     // action, add listener, listener list, final state
+                    //行动，监测add，监测list，最终状态
                     [ "resolve", "done", jQuery.Callbacks("once memory"), "resolved" ],
                     [ "reject", "fail", jQuery.Callbacks("once memory"), "rejected" ],
                     [ "notify", "progress", jQuery.Callbacks("memory") ]
@@ -3319,24 +3326,29 @@
         if ( !input.type ) {
             return support;
         }
-
+        //把输入框改成复选框
         input.type = "checkbox";
 
         // Support: Safari 5.1, iOS 5.1, Android 4.x, Android 2.3
         // Check the default checkbox/radio value ("" on old WebKit; "on" elsewhere)
+        //复选框的value的默认值是什么
         support.checkOn = input.value !== "";
 
         // Must access the parent to make an option select properly
         // Support: IE9, IE10
+        //下拉菜单的子项 （IE下第一个子项并不是选中）
         support.optSelected = opt.selected;
 
         // Will be defined later
+        //定义了初始值 将会在后面再次定义 下面三个定义的变量要在DOM加载完后判断
         support.reliableMarginRight = true;
         support.boxSizingReliable = true;
         support.pixelPosition = false;
 
         // Make sure checked status is properly cloned
         // Support: IE9, IE10
+        //让复选框选中
+        // 在IE下 clone后的复选框并没有选中
         input.checked = true;
         support.noCloneChecked = input.cloneNode( true ).checked;
 
@@ -3347,6 +3359,7 @@
 
         // Check if an input maintains its value after becoming a radio
         // Support: IE9, IE10
+        //先设置value再设置type
         input = document.createElement("input");
         input.value = "t";
         input.type = "radio";
@@ -3364,8 +3377,9 @@
 
         // Support: Firefox, Chrome, Safari
         // Beware of CSP restrictions (https://developer.mozilla.org/en/Security/CSP)
+        //检查onfocusin函数是否支持
         support.focusinBubbles = "onfocusin" in window;
-
+        //也是针对IE的。
         div.style.backgroundClip = "content-box";
         div.cloneNode( true ).style.backgroundClip = "";
         support.clearCloneStyle = div.style.backgroundClip === "content-box";
@@ -3381,25 +3395,29 @@
                 // Return for frameset docs that don't have a body
                 return;
             }
-
+            //创建一个div 只用来做功能检测
             container = document.createElement("div");
             container.style.cssText = "border:0;width:0;height:0;position:absolute;top:0;left:-9999px;margin-top:1px";
 
             // Check box-sizing and margin behavior.
             body.appendChild( container ).appendChild( div );
-            div.innerHTML = "";
+            div.innerHTML = ""; //历史的遗留的残物
             // Support: Firefox, Android 2.3 (Prefixed box-sizing versions).
+            //改样式
             div.style.cssText = "-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;padding:1px;border:1px;display:block;width:4px;margin-top:1%;position:absolute;top:1%";
 
             // Workaround failing boxSizing test due to offsetWidth returning wrong value
             // with some non-1 values of body zoom, ticket #13543
+            //$.swap  转换+还原样式  zoom: 显示比例  设置完zoom中会启动这个回调函数 看看这个div在这个环境下支不支持offsetWith
             jQuery.swap( body, body.style.zoom != null ? { zoom: 1 } : {}, function() {
                 support.boxSizing = div.offsetWidth === 4;
             });
 
             // Use window.getComputedStyle because jsdom on node.js will break without it.
             if ( window.getComputedStyle ) {
+                //sarifi：top：只会返回像素，其余返回比例
                 support.pixelPosition = ( window.getComputedStyle( div, null ) || {} ).top !== "1%";
+                //在IE下的width会加上padding
                 support.boxSizingReliable = ( window.getComputedStyle( div, null ) || { width: "4px" } ).width === "4px";
 
                 // Support: Android 2.3
@@ -3431,6 +3449,8 @@
      4. _Never_ expose "private" data to user code (TODO: Drop _data, _removeData)
      5. Avoid exposing implementation details on user objects (eg. expando properties)
      6. Provide a clear path for implementation upgrade to WeakMap in 2014
+     而attr和prop有可能会出现内存泄漏
+     data会防止DOM元素与对象之间互相引用，大部分游览器就会出现内存泄漏
      */
     var data_user, data_priv,
         rbrace = /(?:\{[\s\S]*\}|\[[\s\S]*\])$/,
@@ -4416,7 +4436,8 @@
                 }
             }
         };
-        if ( !jQuery.support.checkOn ) {
+        if ( !jQuery.support.checkOn ) {  //取反假
+            //通过下面的方法把默认的radio设置为on
             jQuery.valHooks[ this ].get = function( elem ) {
                 // Support: Webkit
                 // "" is returned instead of "on" if a value isn't specified
