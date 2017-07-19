@@ -3472,17 +3472,20 @@
         // Support: Android < 4,
         // Old WebKit does not have Object.preventExtensions/freeze method,
         // return new empty object instead with no [[set]] accessor
+        //在安卓4以下和在老版本的chrome内核中没有freeze  freeze是防止修改对象
+        //defineProperty防止修改内部对象  0是用来公用的
         Object.defineProperty( this.cache = {}, 0, {
+            //只有get方法的时候只能获取
             get: function() {
                 return {};
             }
         });
 
-        this.expando = jQuery.expando + Math.random();
+        this.expando = jQuery.expando + Math.random(); //jQuery版本加上随机数  再 加上一个随机数
     }
 
-    Data.uid = 1;
-
+    Data.uid = 1;//从1开始
+    //Data的静态方法
     Data.accepts = function( owner ) {
         // Accepts only:
         //  - Node
@@ -3490,6 +3493,7 @@
         //    - Node.DOCUMENT_NODE
         //  - Object
         //    - Any
+        //判断节点，如果返回1那就是元素  如果返回9那就是document
         return owner.nodeType ?
         owner.nodeType === 1 || owner.nodeType === 9 : true;
     };
@@ -3499,12 +3503,14 @@
             // We can accept data for non-element nodes in modern browsers,
             // but we should not, see #8335.
             // Always return the key for a frozen object.
+            //有的话直接跳过，没有直接返回0
             if ( !Data.accepts( owner ) ) {
                 return 0;
             }
 
             var descriptor = {},
             // Check if the owner object already has a cache key
+                //找到这个随机数，把他放到body上
                 unlock = owner[ this.expando ];
 
             // If not, create one
@@ -3512,13 +3518,14 @@
                 unlock = Data.uid++;
 
                 // Secure it in a non-enumerable, non-writable property
+                //只能获取，不能改  支持就写下面
                 try {
                     descriptor[ this.expando ] = { value: unlock };
                     Object.defineProperties( owner, descriptor );
 
                     // Support: Android < 4
                     // Fallback to a less secure definition
-                } catch ( e ) {
+                } catch ( e ) { //在安卓4以下就不支持，就做了个兼容
                     descriptor[ this.expando ] = unlock;
                     jQuery.extend( owner, descriptor );
                 }
@@ -3536,14 +3543,18 @@
             // There may be an unlock assigned to this node,
             // if there is no entry for this "owner", create one inline
             // and set the unlock as though an owner entry had always existed
+                //找到这个ID
                 unlock = this.key( owner ),
+                //在找到对应的JSON
                 cache = this.cache[ unlock ];
 
             // Handle: [ owner, key, value ] args
             if ( typeof data === "string" ) {
+                //如果有数据的话就往里面添
                 cache[ data ] = value;
 
                 // Handle: [ owner, { properties } ] args
+                //解决JSON格式
             } else {
                 // Fresh assignments by object are shallow copied
                 if ( jQuery.isEmptyObject( cache ) ) {
@@ -3652,13 +3663,13 @@
     };
 
 // These may be used throughout the jQuery core codebase
-    data_user = new Data();
-    data_priv = new Data();
+    data_user = new Data();  //对外的数据缓存对象
+    data_priv = new Data();  //对内的数据缓存对象
 
 
     jQuery.extend({
-        acceptData: Data.accepts,
-
+        acceptData: Data.accepts, //直接来一个内部的静态方法
+        //以下基本上都是data_user和data_priv面向对象的方法
         hasData: function( elem ) {
             return data_user.hasData( elem ) || data_priv.hasData( elem );
         },

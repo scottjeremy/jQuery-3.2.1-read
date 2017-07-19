@@ -15,3 +15,15 @@ jQuery.fn.extend({
     removeData
 
 });
+
+Data.prototype = {
+
+    key
+    set
+    get
+    access
+    remove
+    hasData
+    discard
+
+}
