@@ -3514,6 +3514,7 @@
                 unlock = owner[ this.expando ];
 
             // If not, create one
+            //如果没有，就创建一个。如果有就直接跳过，不分配ID
             if ( !unlock ) {
                 unlock = Data.uid++;
 
@@ -3616,12 +3617,14 @@
             var i, name, camel,
                 unlock = this.key( owner ),
                 cache = this.cache[ unlock ];
-
+            //当key不存在的时候
             if ( key === undefined ) {
+                //清空
                 this.cache[ unlock ] = {};
 
             } else {
                 // Support array or space separated string of keys
+                //假如是一个数组的话
                 if ( jQuery.isArray( key ) ) {
                     // If "name" is an array of keys...
                     // When data is initially created, via ("key", "val") signature,
@@ -3631,19 +3634,22 @@
                     // This will only penalize the array argument path.
                     name = key.concat( key.map( jQuery.camelCase ) );
                 } else {
+                    //转驼峰
                     camel = jQuery.camelCase( key );
                     // Try the string as a key before any manipulation
                     if ( key in cache ) {
+                        //看key是否存在cache
                         name = [ key, camel ];
                     } else {
                         // If a key with the spaces exists, use it.
                         // Otherwise, create an array by matching non-whitespace
+                        //key不在cache中
                         name = camel;
                         name = name in cache ?
                             [ name ] : ( name.match( core_rnotwhite ) || [] );
                     }
                 }
-
+                //有就删掉
                 i = name.length;
                 while ( i-- ) {
                     delete cache[ name[ i ] ];
@@ -3651,11 +3657,13 @@
             }
         },
         hasData: function( owner ) {
+            //用isEmptyObject方法来判断是否存在这个数据
             return !jQuery.isEmptyObject(
                 this.cache[ owner[ this.expando ] ] || {}
             );
         },
         discard: function( owner ) {
+            //删除指定cache下的指定JSON值
             if ( owner[ this.expando ] ) {
                 delete this.cache[ owner[ this.expando ] ];
             }
@@ -3694,23 +3702,28 @@
     });
 
     jQuery.fn.extend({
+        //key对应value
         data: function( key, value ) {
             var attrs, name,
-                elem = this[ 0 ],
+                elem = this[ 0 ],  //假如一组的话就选第一个
                 i = 0,
                 data = null;
 
             // Gets all values
+            //判断key等于空
             if ( key === undefined ) {
+                //判断是否有这个元素
                 if ( this.length ) {
+                    //获取到div当中的数据
                     data = data_user.get( elem );
-
+                    //把HTML5的数据缓存找到  先判断有没有这个属性
                     if ( elem.nodeType === 1 && !data_priv.get( elem, "hasDataAttrs" ) ) {
                         attrs = elem.attributes;
                         for ( ; i < attrs.length; i++ ) {
                             name = attrs[ i ].name;
-
+                            //判断是否包含data-
                             if ( name.indexOf( "data-" ) === 0 ) {
+                                //转驼峰再存储
                                 name = jQuery.camelCase( name.slice(5) );
                                 dataAttr( elem, name, data[ name ] );
                             }
@@ -3718,7 +3731,7 @@
                         data_priv.set( elem, "hasDataAttrs", true );
                     }
                 }
-
+                //如果key值为空，则返回所要查询的数据
                 return data;
             }
 
@@ -3738,16 +3751,20 @@
                 // `value` parameter was not undefined. An empty jQuery object
                 // will result in `undefined` for elem = this[ 0 ] which will
                 // throw an exception if an attempt to read a data cache is made.
+                //判断不为空  下面走的都是获取
                 if ( elem && value === undefined ) {
                     // Attempt to get data from the cache
                     // with the key as-is
+                    //获取普通的缓存数据
                     data = data_user.get( elem, key );
+                    //判断是否有key值
                     if ( data !== undefined ) {
                         return data;
                     }
 
                     // Attempt to get data from the cache
                     // with the key camelized
+                    //获取带驼峰的缓存数据
                     data = data_user.get( elem, camelKey );
                     if ( data !== undefined ) {
                         return data;
@@ -3755,6 +3772,7 @@
 
                     // Attempt to "discover" the data in
                     // HTML5 custom data-* attrs
+                    //找HTMK5的data-自定义缓存数据
                     data = dataAttr( elem, camelKey, undefined );
                     if ( data !== undefined ) {
                         return data;
@@ -3765,6 +3783,7 @@
                 }
 
                 // Set the data...
+                //设置data
                 this.each(function() {
                     // First, attempt to store a copy or reference of any
                     // data that might've been store with a camelCased key.
@@ -3781,10 +3800,10 @@
                     if ( key.indexOf("-") !== -1 && data !== undefined ) {
                         data_user.set( this, key, value );
                     }
-                });
+                }); //通过arguments来判断是get还是set
             }, null, value, arguments.length > 1, null, true );
         },
-
+        //调用remove方法删除Data
         removeData: function( key ) {
             return this.each(function() {
                 data_user.remove( this, key );
@@ -3797,8 +3816,11 @@
 
         // If nothing was found internally, try to fetch any
         // data from the HTML5 data-* attribute
+        //先判断data有没有值  并且是一个元素才走下面
         if ( data === undefined && elem.nodeType === 1 ) {
+            //找到大写字母，然后改成-小写
             name = "data-" + key.replace( rmultiDash, "-$1" ).toLowerCase();
+            //通过getAttribute找到data里面的值
             data = elem.getAttribute( name );
 
             if ( typeof data === "string" ) {
@@ -3807,8 +3829,9 @@
                         data === "false" ? false :
                             data === "null" ? null :
                                 // Only convert to a number if it doesn't change the string
+                                //看是不是存的是一个数字
                                 +data + "" === data ? +data :
-                                    rbrace.test( data ) ? JSON.parse( data ) :
+                                    rbrace.test( data ) ? JSON.parse( data ) ://通过原生JavaScript把集合改为数组
                                         data;
                 } catch( e ) {}
 

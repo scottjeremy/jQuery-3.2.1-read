@@ -1,0 +1,18 @@
+jQuery.extend({
+
+    queue
+    dequeue
+    _queueHooks
+
+});
+
+jQuery.fn.extend({
+
+    queue
+    dequeue
+    delay
+    clearQueue
+    promise
+
+});
+
