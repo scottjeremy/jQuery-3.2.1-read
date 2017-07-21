@@ -3844,46 +3844,57 @@
         return data;
     }
     jQuery.extend({
+        //queue相当于push()  dequeue相当于shift()
+        //queue队列中存储的都是函数
+        //接收三个参数：对象，队列名字，往里面存的数据
         queue: function( elem, type, data ) {
             var queue;
-
+            //当这个元素存在的时候
             if ( elem ) {
+                //队列名字，默认为fx  写什么名字后面都会加“queue”
                 type = ( type || "fx" ) + "queue";
                 queue = data_priv.get( elem, type );
 
                 // Speed up dequeue by getting out quickly if this is just a lookup
                 if ( data ) {
+                    //先判断有没有queue  判断data是否为数组
+                    //
                     if ( !queue || jQuery.isArray( data ) ) {
+                        //第一次没有就创建
                         queue = data_priv.access( elem, type, jQuery.makeArray(data) );
-                    } else {
+                    } else {//第二次有的话就puh进去
                         queue.push( data );
                     }
                 }
+                //写两个参数就返回集合
                 return queue || [];
             }
         },
 
         dequeue: function( elem, type ) {
+            //判断type类型 默认fx
             type = type || "fx";
-
+            //得到这个队列
             var queue = jQuery.queue( elem, type ),
-                startLength = queue.length,
-                fn = queue.shift(),
+                startLength = queue.length,//或者这个数组队列的参数
+                fn = queue.shift(),//通过shift找到队列的第一个元素
                 hooks = jQuery._queueHooks( elem, type ),
                 next = function() {
                     jQuery.dequeue( elem, type );
                 };
 
             // If the fx queue is dequeued, always remove the progress sentinel
+            //判断fn 是否为这个字符串
             if ( fn === "inprogress" ) {
                 fn = queue.shift();
                 startLength--;
             }
-
+            //是否为函数
             if ( fn ) {
 
                 // Add a progress sentinel to prevent the fx queue from being
                 // automatically dequeued
+                //如果type为fx
                 if ( type === "fx" ) {
                     queue.unshift( "inprogress" );
                 }
@@ -3930,7 +3941,7 @@
 
                     // ensure a hooks for this queue
                     jQuery._queueHooks( this, type );
-
+                    //入队后立即让第一个出队
                     if ( type === "fx" && queue[0] !== "inprogress" ) {
                         jQuery.dequeue( this, type );
                     }
