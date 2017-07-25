@@ -17,17 +17,17 @@ jQuery v3.2.1源码分析
 
 ## 源码目录结构
 
-        (14 , 37)  做个判断兼容Node.JS
+        (14 , 37)       做个判断兼容Node.JS
 
-        (40 , 112)  定义了一些变量和函数 jquery = function(){};
+        (40 , 112)      定义了一些变量和函数 jquery = function(){};
 
-        (114 , 193) 给jQuery添加一些原型方法
+        (114 , 193)     给jQuery添加一些原型方法
 
-        (195 , 262) extend : JQ的继承方法
+        (195 , 262)     extend : JQ的继承方法
 
-        (264 , 510) jQuery.extend()  :  扩展一些工具方法
+        (264 , 510)     jQuery.extend()  :  扩展一些工具方法
 
-        (538 , 2901) Sizzle  :  实现复杂选择器
+        (538 , 2901)    Sizzle  :  实现复杂选择器
 
         (2903 ， 2945)  一些jQuery对象实例方法（find fliter not is）
 
@@ -38,52 +38,52 @@ jQuery v3.2.1源码分析
         (3162 ， 3238)  用jQuery.each()循环执行工具方法
         (parent parents parentsUntil next prev nextAll prevAll nextUntil prevUntil siblings children contents)
 
-        (3274 , 3507) Callbacks : 回调对象 ： 对函数的一个统一管理
+        (3274 , 3507)   Callbacks : 回调对象 ： 对函数的一个统一管理
 
-        (3509 , 3848) Deferred : 延迟兑现 ： 对异步的统一管理
+        (3509 , 3848)   Deferred : 延迟兑现 ： 对异步的统一管理
 
         (3894 ， 3950)  jQuery.ready附带方法，判断DOM是否加载完成
 
         (3957 ， 4024)  jQuery内部access方法
 
-        (4035 , 4351)  jQuery里的data数据缓存
+        (4035 , 4351)   jQuery里的data数据缓存
 
-        (4354 ，4486)  jQuery的队列管理(queue dequeue)
+        (4354 ，4486)   jQuery的队列管理(queue dequeue)
 
-        (4494 ，4692)  jQuery实例方法：操作DOM(show hide toggle)
+        (4494 ，4692)   jQuery实例方法：操作DOM(show hide toggle)
 
-        (4693 ，4964) 内部方法(getAll setGlobalEval buildFragment 内部函数 on )
+        (4693 ，4964)   内部方法(getAll setGlobalEval buildFragment 内部函数 on )
 
-        (4970 ，5468)  封装event对象(add remove dispatch handlers addProp fix) jQuery工具方法(removeEvent Event)
+        (4970 ，5468)   封装event对象(add remove dispatch handlers addProp fix) jQuery工具方法(removeEvent Event)
 
-        (5471 ，5565)  所有常见事件的封装
+        (5471 ，5565)   所有常见事件的封装
 
-        (5614 ，5817)  定义一些内部方法（on one off）
+        (5614 ，5817)   定义一些内部方法（on one off）
 
-        (5614 ，5818)定义一些正则 内部方法为下面的工具方法做铺垫
+        (5614 ，5818)   定义一些正则 内部方法为下面的工具方法做铺垫
         (manipulationTarget disableScript restoreScript cloneCopyEvent fixInput domManip remove)
 
-        (5820 ，5900)  jQuery工具方法(htmlPrefilter clone cleanData)
+        (5820 ，5900)   jQuery工具方法(htmlPrefilter clone cleanData)
 
-        (5902 ，6067)  jQuery实例方法(detach remove text append prepend before after empty clone html replaceWit)
+        (5902 ，6067)   jQuery实例方法(detach remove text append prepend before after empty clone html replaceWit)
 
-        (6088 ，6163)  自执行函数(做兼容)
+        (6088 ，6163)   自执行函数(做兼容)
 
-        (6166 ，6380) 定义一些内部方法为下面的工具方法做铺垫
+        (6166 ，6380)   定义一些内部方法为下面的工具方法做铺垫
         (curCSS addGetHookIf vendorPropName finalPropName setPositiveNumber augmentWidthOrHeight getWidthOrHeight)
 
-        (6382 ，6624)  jQuery工具方法 定义一些内部对象(cssHooks cssNumber cssProps) 工具方法(style css) jQuery.cssHooks
+        (6382 ，6624)   jQuery工具方法 定义一些内部对象(cssHooks cssNumber cssProps) 工具方法(style css) jQuery.cssHooks
 
-        (6626 ，6649)  jQuery的CSS方法。上面代码都是做铺垫。
+        (6626 ，6649)   jQuery的CSS方法。上面代码都是做铺垫。
 
-        (6652 ，7456)  animate jQuery的动画
+        (6652 ，7456)   animate jQuery的动画
 
-        (7459 ，7746) jQuery的attr方法
+        (7459 ，7746)   jQuery的attr方法
 
-        (7753 ，7920) jQuery实例方法(addClass removeClass toggleClass hasClass)
+        (7753 ，7920)   jQuery实例方法(addClass removeClass toggleClass hasClass)
 
         (7927 ，8303)
 
-        (10246)       window.jQuery = window.$ = jQuery;
+        (10246)         window.jQuery = window.$ = jQuery;
 
 ## 代码持续更新
