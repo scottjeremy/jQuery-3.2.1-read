@@ -1,0 +1,24 @@
+jQuery.fn.extend({
+
+    attr
+    removeAttr
+    prop
+    removeProp
+    addClass
+    removeClass
+    toggleClass
+    hasClass
+    val
+
+});
+
+jQuery.extend({
+
+    valHooks
+    attr
+    removeAttr
+    attrHooks
+
+});
+
+
