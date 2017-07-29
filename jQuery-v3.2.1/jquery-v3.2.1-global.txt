@@ -65,7 +65,7 @@
 
     (7753 ，7920) jQuery实例方法(addClass removeClass toggleClass hasClass)
 
-    (7927 ，8303)
+    (7927 ，8303) jQuery实例方法(val valHooks对象的定义 trigger triggerHandler hover)
 
     (10246)       window.jQuery = window.$ = jQuery;
 
